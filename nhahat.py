@@ -1,8 +1,7 @@
-import machine # type: ignore
+import rpy.hmc5883l as hmc5883l
 import time
-adc=machine.ADC(machine.Pin(0))
-adc.atten(machine.ADC.ATTN_11DB)
+laban=hmc5883l.HMC5883L(scl=5,sda=4)
 while True:
-    print(adc.read())
+    print(laban.heading())
     time.sleep(1)
     
