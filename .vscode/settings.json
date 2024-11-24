@@ -1,0 +1,28 @@
+{
+    "terminal.integrated.env.linux": {
+         "PATH": "${env:PATH}:${env:HOME}/.python_env/bin"
+    },
+    "python.testing.pytestArgs": [
+        "rpy"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "MicroPython.executeButton": [
+        {
+            "text": "▶",
+            "tooltip": "Run",
+            "alignment": "left",
+            "command": "extension.executeFile",
+            "priority": 3.5
+        }
+    ],
+    "MicroPython.syncButton": [
+        {
+            "text": "$(sync)",
+            "tooltip": "sync",
+            "alignment": "left",
+            "command": "extension.execute",
+            "priority": 4
+        }
+    ]
+}
