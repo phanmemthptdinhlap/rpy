@@ -5,13 +5,13 @@ class LOG:
     def __call__(self,values):
         self.file.write(f"{values[0]}, {values[1]}, {values[2]}, {values[3]}\n")
 class ADCS:
-    def __init__(self, pin=[machine.Pin(33),machine.Pin(34),machine.Pin(35),machine.Pin(36)],
+    def __init__(self, pin=[33,34,35,36],
                  sample=[1300,1700,2100,1700]):
         self.adcs=[
-            machine.ADC(pin[0]),
-            machine.ADC(pin[1]),
-            machine.ADC(pin[2]),
-            machine.ADC(pin[3]),
+            machine.ADC(machine.Pin(pin[0])),
+            machine.ADC(machine.Pin(pin[1])),
+            machine.ADC(machine.Pin(pin[2])),
+            machine.ADC(machine.Pin(pin[3])),
         ]
         self.sample=sample 
         for adc in self.adcs:
