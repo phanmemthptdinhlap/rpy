@@ -52,7 +52,7 @@ class DOLINE:
                     print('TH10')
                     index1=2
                     index2=0
-                if adcs[0] ==True and adcs[1] ==True and adcs[2] ==True and adcs[3] ==True :
+                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False :
                     print('TH11')
                     self.motor1.stop()
                     self.motor2.stop()
