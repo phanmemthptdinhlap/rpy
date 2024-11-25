@@ -20,47 +20,39 @@ class DOLINE:
                 index1=2
                 index2=2
                 adcs=self.adcs.line()
-                if adcs[0]==1 and adcs[1]==1 and adcs[2]==1 and adcs[3]==1:#0= den, 1= trang
+                if adcs[0] == True and adcs[1] == True and adcs[2] == True and adcs[3] == True:#True= den, False= trang
                     self.motor1.stop()
                     self.motor2.stop()   
                     break
-                if adcs[0]==0 and adcs[1]==0 and adcs[2]==1 and adcs[3]==1:#0= den, 1= trang
+                if adcs[0] == True and adcs[1] == True and adcs[2] == False and adcs[3]==False:
                     print('TH2')
-                    index1=3
-                    index2=4
-                if adcs[0]==1 and adcs[1]==1 and adcs[2]==0 and adcs[3]==0:#0= den, 1= trang
-                    print('TH3')
-                    index1=4
+                    index1=2
                     index2=3
-                if adcs[0]==0 and adcs[1]==1 and adcs[2]==1 and adcs[3]==1:#0= den, 1= trang
+                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==True and adcs[3] ==True:
+                    print('TH3')
+                    index1=3
+                    index2=2
+                if adcs[0] ==True and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False:
                     print('TH4')
                     index1=0
                     index2=2
-                if adcs[0]==1 and adcs[1]==1 and adcs[2]==1 and adcs[3]==0:#0= den, 1= trang
+                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==True:
                     print('TH5')
                     index1=2
                     index2=0
-                if adcs[0]==1 and adcs[1]==0 and adcs[2]==0 and adcs[3]==1:#0= den, 1= trang
+                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
                     print('TH6')
                     index1=3
                     index2=3
-                if adcs[0]==1 and adcs[1]==1 and adcs[2]==0 and adcs[3]==1:#0= den, 1= trang
-                    print('TH7')
-                    index1=1
-                    index2=0
-                if adcs[0]==1 and adcs[1]==0 and adcs[2]==1 and adcs[3]==1:#0= den, 1= trang
-                    print('TH8')
-                    index1=0
-                    index2=1
-                if adcs[0]==1 and adcs[1]==0 and adcs[2]==0 and adcs[3]==0:#0= den, 1= trang
+                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==True:
                     print('TH9')
                     index1=0
-                    index2=1
-                if adcs[0]==0 and adcs[1]==0 and adcs[2]==0 and adcs[3]==1:#0= den, 1= trang
+                    index2=2
+                if adcs[0] ==True and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
                     print('TH10')
-                    index1=1
+                    index1=2
                     index2=0
-                if adcs[0]==0 and adcs[1]==0 and adcs[2]==0 and adcs[3]==0:#0= den, 1= trang
+                if adcs[0] ==True and adcs[1] ==True and adcs[2] ==True and adcs[3] ==True :
                     print('TH11')
                     self.motor1.stop()
                     self.motor2.stop()
