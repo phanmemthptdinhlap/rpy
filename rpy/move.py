@@ -5,11 +5,10 @@ import time
      
 class MOVE: 
     def __init__(self, pin=None,
-                 offset=(0,0),speed=(300,700,900,1000),timeconf=0.2,sample=(2200,2200,2200,2200)):
+                 offset=(0,0),speed=(300,700,900,1000),timeconf=0.2):
         if pin is not None:
             self.adcs=ADCS(pin=pin)
         else:
-            self.sample=sample
             self.adcs=ADCS()
             self.speed=speed
             self.timeconf=timeconf
