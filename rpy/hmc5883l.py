@@ -27,7 +27,7 @@ class HMC5883L:
         '8.1':  (7 << 5, 4.35)
     }
 
-    def __init__(self, scl=22, sda=21, address=30, gauss='1.3', declination=(0, 0)):
+    def __init__(self, scl=22, sda=21, gauss='1.3', declination=(0, 0)):
         """ Khởi tạo lớp HMC5883L.
 
         Tham số truyền vào:
@@ -37,7 +37,7 @@ class HMC5883L:
             gauss (str): mặc định '1.3'.
             declination (tuple): điều chỉnh hướng, mặc định  (0, 0).
         """
-        self.i2c = i2c = machine.I2C(scl=machine.Pin(scl), sda=machine.Pin(sda), freq=100000)
+        self.i2c = i2c = machine.SoftI2C(scl=machine.Pin(scl), sda=machine.Pin(sda), freq=100000)
 
         # Initialize sensor.
         i2c.start()
