@@ -53,8 +53,6 @@ class MOVE:
         run=True
         while run:
             try:
-                index1=2
-                index2=2
                 ret=0
                 adcs=self.adcs.line()
                 if adcs[0] == True and adcs[1] == True and adcs[2] == True and adcs[3] == True:     #True= den, False= trang
@@ -63,56 +61,54 @@ class MOVE:
                     break
                 if adcs[0] == True and adcs[1] == True and adcs[2] == False and adcs[3]==False:
                     print('TH2')
-                    index1=3
-                    index2=2
+                    self.motor1.run(3)
+                    self.motor2.run(2)
                 if adcs[0] ==False and adcs[1] ==False and adcs[2] ==True and adcs[3] ==True:
                     print('TH3')
-                    index1=2
-                    index2=3
+                    self.motor1.run(2)
+                    self.motor2.run(3)
                 if adcs[0] ==True and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False:
                     print('TH4')
-                    index1=2
-                    index2=0
+                    self.motor1.run(2)
+                    self.motor2.run(0)
                 if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==True:
                     print('TH5')
-                    index1=0
-                    index2=2
+                    self.motor1.run(0)
+                    self.motor2.run(2)
                 if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
                     print('TH6')
-                    index1=3
-                    index2=3
+                    self.motor1.run(3)
+                    self.motor2.run(3)
                 if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==True:
                     print('TH7')
-                    index1=2
-                    index2=1
+                    self.motor1.run(2)
+                    self.motor2.run(1)
                 if adcs[0] ==True and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
                     print('TH8')
-                    index1=1
-                    index2=2
+                    self.motor1.run(1)
+                    self.motor2.run(2)
                 if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False :
                     print('TH9')
-                    index1=2
-                    index2=0
+                    self.motor1.run(2)
+                    self.motor2.run(0)
                     time.sleep(0.5)
                     break
                 if adcs[0] ==False and adcs[1] ==True and adcs[2] ==False  and adcs[3] ==False:
                     print('TH10')
-                    index1=0
-                    index2=2
+                    self.motor1.run(0)
+                    self.motor2.run(2)
                 if adcs[0] ==False and adcs[1] ==False  and adcs[2] ==True and adcs[3] ==False:
                     print('TH11')
-                    index1=2
-                    index2=0
+                    self.motor1.run(2)
+                    self.motor2.run(0)
                 if adcs[0] ==True and adcs[1] ==True and adcs[2] == False and adcs[3]==True:
                     print('TH12')
-                    index1=2
-                    index2=1
+                    self.motor1.run(2)
+                    self.motor2.run(1)
                 if adcs[0] ==True and adcs[1] ==False  and adcs[2] == True and adcs[3]==True:
                     print('TH13')
-                    index1=2
-                    index2=1
-                self.motor1.run(self.speed[index1])
-                self.motor2.run(self.speed[index2])
+                    self.motor1.run(2)
+                    self.motor2.run(1)
             except:
                 print('false')
                 run=False
