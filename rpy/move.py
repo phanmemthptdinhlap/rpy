@@ -23,11 +23,11 @@ class MOVE:
         values=self.adcs.line()
         while not values[0] and not values[3]:
             if r:
-                self.motor1.run(self.speed[0)
-                self.motor2.run(self.speed[400)
+                self.motor1.run(0)
+                self.motor2.run(400)
             else:
-                self.motor1.run(self.speed[400)
-                self.motor2.run(self.speed[0)
+                self.motor1.run(400)
+                self.motor2.run(0)
             values=self.adcs.line()
         self.motor1.stop()
         self.motor2.stop()
@@ -39,11 +39,11 @@ class MOVE:
         '''
         t=self.timeconf*abs(cm)
         if cm>0:
-            self.motor1.run(self.speed[400)
-            self.motor2.run(self.speed[400)
+            self.motor1.run(400)
+            self.motor2.run(400)
         else:
-            self.motor1.run(self.speed[-400)
-            self.motor2.run(self.speed[-400)
+            self.motor1.run(-400)
+            self.motor2.run(-400)
         time.sleep(t)
         self.motor1.stop()
         self.motor2.stop()
