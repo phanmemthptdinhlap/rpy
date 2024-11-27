@@ -2,7 +2,7 @@ from rpy.adcs import ADCS
 from rpy.motor import MOTOR1,MOTOR2
 import machine #type: ignore
 import time
-     
+
 class MOVE: 
     def __init__(self, pin=None,
                  offset=(0,0),speed=(300,700,900,1000),timeconf=0.2):
@@ -55,43 +55,62 @@ class MOVE:
             try:
                 index1=2
                 index2=2
+                ret=0
                 adcs=self.adcs.line()
                 if adcs[0] == True and adcs[1] == True and adcs[2] == True and adcs[3] == True:     #True= den, False= trang
                     self.motor1.stop()
-                    self.motor2.stop()   
+                    self.motor2.stop()
                     break
                 if adcs[0] == True and adcs[1] == True and adcs[2] == False and adcs[3]==False:
                     print('TH2')
-                    index1=2
-                    index2=3
-                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==True and adcs[3] ==True:
-                    print('TH3')
                     index1=3
                     index2=2
+                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==True and adcs[3] ==True:
+                    print('TH3')
+                    index1=2
+                    index2=3
                 if adcs[0] ==True and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False:
                     print('TH4')
-                    index1=0
-                    index2=2
-                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==True:
-                    print('TH5')
                     index1=2
                     index2=0
+                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==True:
+                    print('TH5')
+                    index1=0
+                    index2=2
                 if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
                     print('TH6')
                     index1=3
                     index2=3
                 if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==True:
-                    print('TH9')
-                    index1=0
-                    index2=2
+                    print('TH7')
+                    index1=2
+                    index2=1
                 if adcs[0] ==True and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
-                    print('TH10')
+                    print('TH8')
+                    index1=1
+                    index2=2
+                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False :
+                    print('TH9')
                     index1=2
                     index2=0
-                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False :
+                    time.sleep(0.5)
+                    break
+                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==False  and adcs[3] ==False:
+                    print('TH10')
+                    index1=0
+                    index2=2
+                if adcs[0] ==False and adcs[1] ==False  and adcs[2] ==True and adcs[3] ==False:
                     print('TH11')
-                    self.motor1.stop()
-                    self.motor2.stop()
+                    index1=2
+                    index2=0
+                if adcs[0] ==True and adcs[1] ==True and adcs[2] == False and adcs[3]==True:
+                    print('TH12')
+                    index1=2
+                    index2=1
+                if adcs[0] ==True and adcs[1] ==False  and adcs[2] == True and adcs[3]==True:
+                    print('TH13')
+                    index1=2
+                    index2=1
                 self.motor1.run(self.speed[index1])
                 self.motor2.run(self.speed[index2])
             except:
@@ -103,15 +122,13 @@ class MOVE:
         self.motor1.stop()
         self.motor2.stop()
         return True
-        
-        
-if __name__ == "__main__":
-    doline=MOVE()
-    while True:
-        doline.turn(r=True )
-        time.sleep(4)
-        doline.turn(r=False)
-        time.sleep(4)
+    
+''' def _run_steps(self,step=1):
+        self.run=True
+        for _ in range(step):
+            self._run_step()
+    def run_steps(self,step=1):
+        self._run_steps(step)'''
         
             
 
