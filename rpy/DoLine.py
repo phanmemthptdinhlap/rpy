@@ -19,10 +19,8 @@ class DOLINE:
             try:
                 index1=2
                 index2=2
-                adcs=self.adcs.line()
-                ``` True  = den
-                    False = trang
-                ```
+                adcs=self.adcs.line() #True  = den; False = trang
+
                 if adcs[0] == True and adcs[1] == True and adcs[2] == True and adcs[3] == True:
                     self.motor1.stop()
                     self.motor2.stop()   
