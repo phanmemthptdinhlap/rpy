@@ -24,23 +24,31 @@ class RUNER:
         self.motor1=MOTOR2(offset[0])
         self.motor2=MOTOR1(offset[1])
         self.compass=hmc5883l.HMC5883L(scl=22,sda=21)
+        self.compass.auto_update_declination()
     def _Turn(self,angle):
         """ Góc quay sang phải mang chiều dương """
-        _angle,_=self.compass.heading()
-        _angle_move=_angle-angle
-        _angle_move=_angle_move if _angle_move<360 else _angle_move-360
-        _angle_move=_angle_move if _angle_move>0 else _angle_move+360
-        angle=_angle_move+_angle
-        while abs(angle)>3:
-            print(_angle_move, _angle, angle)
-            if angle<0:
+        if angle>0:
+            _angle,_=self.compass.heading()
+            _angle_move=_angle-angle
+            _angle_move=_angle_move if _angle_move>0 else _angle_move+360
+            angle=abs(_angle_move-_angle)
+            while angle>1:
                 self.motor1.run(self.speed[0])
                 self.motor2.run(-self.speed[0])
-            else:
+                _angle,_=self.compass.heading()
+                angle=abs(_angle_move-_angle)
+        else:
+            _angle,_=self.compass.heading()
+            _angle_move=_angle-angle
+            _angle_move=_angle_move if _angle_move<360 else _angle_move-360
+            angle=abs(_angle_move-_angle)
+            while angle>1:
                 self.motor1.run(-self.speed[0])
                 self.motor2.run(self.speed[0])
-            _angle,_=self.compass.heading()
-            angle=_angle_move+_angle
+                _angle,_=self.compass.heading()
+                angle=abs(_angle_move-_angle)
+        self.motor1.stop()
+        self.motor2.stop()
             
     def _run_step(self):
         run=True
