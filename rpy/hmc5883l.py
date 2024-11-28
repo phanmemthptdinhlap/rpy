@@ -27,7 +27,7 @@ class HMC5883L:
         '8.1':  (7 << 5, 4.35)
     }
 
-    def __init__(self, scl=22, sda=21, gauss='1.3', declination=(0, 0)):
+    def __init__(self, scl=22, sda=21, gauss='1.3', declination=None):
         """ Khởi tạo lớp HMC5883L.
 
         Tham số truyền vào:
@@ -35,9 +35,9 @@ class HMC5883L:
             sda (int): chân dữ liệu,mặc định  21.
             address (int): địa chỉ, mặc định  30.
             gauss (str): mặc định '1.3'.
-            declination (tuple): điều chỉnh hướng, mặc định  (0, 0).
+            declination (tuple): điều chỉnh hướng, mặc định None.
         """
-        self.i2c = i2c = machine.SoftI2C(scl=machine.Pin(scl), sda=machine.Pin(sda), freq=100000)
+        self.i2c = i2c = machine.I2C(scl=machine.Pin(scl), sda=machine.Pin(sda), freq=100000)
 
         # Initialize sensor.
         i2c.start()
@@ -56,12 +56,13 @@ class HMC5883L:
         i2c.writeto_mem(30, 0x02, pack('B', 0x00))
         i2c.stop()
 
-        # Convert declination (tuple of degrees and minutes) to radians.
-        self.declination = (declination[0] + declination[1] / 60) * math.pi / 180
-
         # Reserve some memory for the raw xyz measurements.
         self.data = array('B', [0] * 6)
-
+        if declination is None:
+            self.auto_update_declination()
+        else: 
+            # Convert declination (tuple of degrees and minutes) to radians.
+            self.declination = (declination[0] + declination[1] / 60) * math.pi / 180
     def read(self):
         """ Đọc dữ liệu từ HMC5883L.
 
@@ -87,6 +88,22 @@ class HMC5883L:
 
         return x, y, z
 
+    def auto_update_declination(self):
+        self.declination = 0
+        x, y, _ = self.read()
+        heading_rad = math.atan2(y, x)
+        heading_rad += self.declination
+
+        # Correct reverse heading.
+        if heading_rad < 0:
+            heading_rad += 2 * math.pi
+
+        # Compensate for wrapping.
+        elif heading_rad > 2 * math.pi:
+            heading_rad -= 2 * math.pi
+        self.declination = heading_rad
+    def update_declination(self, declination):
+        self.declination = (declination[0] + declination[1] / 60) * math.pi / 180
     def _heading(self, x, y):
         """ Tính hướng.
 
