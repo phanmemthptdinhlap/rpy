@@ -28,9 +28,10 @@ class RUNER:
     def _Turn(self,angle):
         """ Góc quay sang phải mang chiều dương """
         _angle,_=self.compass.heading()
-        _angle=_angle-angle
-        _angle=_angle if _angle<360 else _angle-360
-        _angle=_angle if _angle>0 else _angle+360
+        _angle_move=_angle-angle
+        _angle_move=_angle_move if _angle_move<360 else _angle_move-360
+        _angle_move=_angle_move if _angle_move>0 else _angle_move+360
+        angle=_angle_move-_angle
         while angle!=0:
             if angle>0:
                 self.motor1.move(self.speed[0])
@@ -39,6 +40,8 @@ class RUNER:
                 self.motor1.move(-self.speed[0])
                 self.motor2.move(self.speed[0])
             time.sleep(0.5)
+            _angle,_=self.compass.heading()
+            angle=_angle_move-_angle
             
     def _run_step(self):
         run=True
