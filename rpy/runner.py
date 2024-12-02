@@ -1,6 +1,6 @@
-
 from rpy.adcs import ADCS
 from rpy.motor import MOTOR1,MOTOR2
+
 import machine #type: ignore
 import rpy.hmc5883l as hmc5883l
 import time
@@ -25,6 +25,7 @@ class RUNER:
         self.motor2=MOTOR1(offset[1])
         self.compass=hmc5883l.HMC5883L(scl=22,sda=21)
         self.compass.auto_update_declination()
+
     def _Turn(self,angle):
         """ Góc quay sang phải mang chiều dương """
         if angle>0:
@@ -104,9 +105,11 @@ class RUNER:
         self.motor1.stop()
         self.motor2.stop()
         return True
+
     def _run_steps(self,step=1):
         self.run=True
         for _ in range(step):
             self._run_step()
+
     def run_steps(self,step=1):
         self._run_steps(step)
