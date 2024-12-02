@@ -5,8 +5,8 @@ import time
 class MOVE: 
     def __init__(self, pin=None,
                  offset=(0,50),
-                 speed=(250,500,750,1000,0),
-                 timeconf=0.2,timeconf2=0.033):
+                 speed=(250,500,750,1000,-500),
+                 timeconf=0.2,timeconf2=0.019):
         if pin is not None:
             self.adcs=ADCS(pin=pin)
         else:
@@ -23,14 +23,18 @@ class MOVE:
         am thi quay trai
     '''
     def turn_degree(self,goc):
+        self.motor1.stop()
+        self.motor2.stop()
         t=self.timeconf2*abs(goc)
         if goc>0:
            self.motor2.run(400)
-           self.motor1.stop()
+           self.motor1.run(-400)
         if goc<0:
-           self.motor2.stop()
-           self.motor1.run(-400)   
+           self.motor2.run(-400)
+           self.motor1.run(400)   
         time.sleep(t)
+        self.motor1.stop()
+        self.motor2.stop()
 
 #### ---- Quay bat line
     def turn(self,r=1):
@@ -71,6 +75,8 @@ class MOVE:
         time.sleep(t)
         self.motor1.stop()
         self.motor2.stop()
+    def run_theoline(self,cm):
+        
 
 #### ---- Do line
     def run_line(self):
@@ -142,12 +148,105 @@ class MOVE:
         self.motor1.stop()
         self.motor2.stop()
         return True
-
-    '''
     def _run_steps(self,step=1):
         self.run=True
         for _ in range(step):
             self._run_step()
     def run_steps(self,step=1):
         self._run_steps(step)
-    '''
+    def nha_hat(self):
+        run=True
+        c=0
+        while run:
+            try:
+                adcs=self.adcs.line()
+                if adcs[0] == True and adcs[1] == True and adcs[2] == True and adcs[3] == True:     #True= den, False= trang
+                    c=c+1
+                    self.motor1.run(self.speed[1])
+                    self.motor2.run(self.speed[1])
+                    time.sleep(2)
+                    self.motor1.stop()
+                    self.motor2.stop()
+                    self.motor1.run(self.speed[1])
+                    time.sleep(2)
+                    self.motor1.stop()
+                    time.sleep(2)
+                    ###nhả hạt###
+                    self.motor1.run(self.speed[4])
+                    time.sleep(2)
+                    self.motor1.stop()
+                    self.motor2.run(self.speed[1])
+                    time.sleep(2)
+                    self.motor2.stop()
+                    time.sleep(2)
+                    ###nhả hạt###
+                    self.motor2.run(self.speed[4])
+                    time.sleep(2)
+                    self.motor2.stop()
+                    if c>4:
+                        self.motor1.stop()
+                        self.motor2.stop()
+                        turn.degree(90)
+                        run_cm(5)
+                        turn.degree(90)
+                        
+                        
+                if adcs[0] == True and adcs[1] == True and adcs[2] == False and adcs[3]==False:
+                    #print('TH2')
+                    print('0den,1den,2trang,3trang')
+                    self.motor1.run(self.speed[3])
+                    self.motor2.run(self.speed[1])
+                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==True and adcs[3] ==True:
+                    #print('TH3')
+                    print('0trang,1trang,2den,3den')
+                    self.motor1.run(self.speed[1])
+                    self.motor2.run(self.speed[3])
+                if adcs[0] ==True and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False:
+                    #print('TH4')
+                    print('0den,1trang,2trang,3trang')
+                    self.motor1.run(self.speed[2])
+                    self.motor2.stop()
+                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==True:
+                    #print('TH5')
+                    print('0trang,1trang,2trang,3den')
+                    self.motor1.stop()
+                    self.motor2.run(self.speed[2])
+                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
+                    #print('TH6')
+                    print('0trang,1den,2den,3trang')
+                    self.motor1.run(self.speed[3])
+                    self.motor2.run(self.speed[3])
+                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==True:
+                    #print('TH7')
+                    print('0trang,1den,2den,3den')
+                    self.motor1.run(self.speed[2])
+                    self.motor2.run(self.speed[3])
+                if adcs[0] ==True and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
+                    #print('TH8')
+                    print('0den,1den,2den,3trang')
+                    self.motor1.run(self.speed[3])
+                    self.motor2.run(self.speed[2])
+                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False :
+                    print('TH9')
+                    self.motor1.stop()
+                    self.motor2.stop()
+                    return 0
+                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==False  and adcs[3] ==False:
+                    #print('TH10')
+                    print('0trang,1den,2trang,3trang')
+                    self.motor1.run(self.speed[2])
+                    self.motor2.run(self.speed[1])
+                if adcs[0] ==False and adcs[1] ==False  and adcs[2] ==True and adcs[3] ==False:
+                    #print('TH11')
+                    print('0trang,1trang,2den,3trang')
+                    self.motor1.run(self.speed[1])
+                    self.motor2.run(self.speed[2])
+            except ValueError as ve:
+                print('false',ve)
+                self.motor1.stop()
+                self.motor2.stop()
+                return -1
+        self.motor1.stop()
+        self.motor2.stop()
+        return True
+        
