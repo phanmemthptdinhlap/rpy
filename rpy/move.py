@@ -2,30 +2,34 @@ from rpy.adcs import ADCS
 from rpy.motor import MOTOR1,MOTOR2
 import machine #type: ignore
 import time
-
 class MOVE: 
     def __init__(self, pin=None,
                  offset=(0,50),
                  speed=(250,500,750,1000,0),
-                 timeconf=0.2):
+                 timeconf=0.2,timeconf2=0.065):
         if pin is not None:
             self.adcs=ADCS(pin=pin)
         else:
             self.adcs=ADCS()
             self.speed=speed
             self.timeconf=timeconf
+            self.timeconf2=timeconf2
             self.motor1=MOTOR2(offset[0])
             self.motor2=MOTOR1(offset[1])
 
 #### ---- Quay goc
+    ''' quay goc khi nhap so do vao
+        duong thi quay phai
+        am thi quay trai
+    '''
     def turn_degree(self,goc):
-        t=self.timeconf*abs(goc)
+        t=self.timeconf2*abs(goc)
         if goc>0:
-           self.motor1.run(400)
-           self.motor2.stop()
-        if goc<0:
+           self.motor2.run(400)
            self.motor1.stop()
-           self.motor2.run(-400)   
+        if goc<0:
+           self.motor2.stop()
+           self.motor1.run(-400)   
         time.sleep(t)
 
 #### ---- Quay bat line
