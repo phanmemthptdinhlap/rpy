@@ -80,60 +80,72 @@ class MOVE:
             try:
                 ret=0
                 adcs=self.adcs.line()
-                if adcs[0] == True and adcs[1] == True and adcs[2] == True and adcs[3] == True:     #True= den, False= trang
+                # True = den ; False = trang
+                if adcs == [True, True, True, True]:
                     self.motor1.stop()
                     self.motor2.stop()
                     return 1
-                if adcs[0] == True and adcs[1] == True and adcs[2] == False and adcs[3]==False:
+
+                if adcs == [True, True, False, False]:
                     #print('TH2')
                     print('0den,1den,2trang,3trang')
                     self.motor1.run(self.speed[3])
                     self.motor2.run(self.speed[1])
-                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==True and adcs[3] ==True:
+
+                if adcs == [False, False, True, True]:
                     #print('TH3')
                     print('0trang,1trang,2den,3den')
                     self.motor1.run(self.speed[1])
                     self.motor2.run(self.speed[3])
-                if adcs[0] ==True and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False:
+
+                if adcs == [True, False, False, False]:
                     #print('TH4')
                     print('0den,1trang,2trang,3trang')
                     self.motor1.run(self.speed[2])
                     self.motor2.stop()
-                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==True:
+
+                if adcs == [False, False, False, True]:
                     #print('TH5')
                     print('0trang,1trang,2trang,3den')
                     self.motor1.stop()
                     self.motor2.run(self.speed[2])
-                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
+
+                if adcs == [False, True, True, False]:
                     #print('TH6')
                     print('0trang,1den,2den,3trang')
                     self.motor1.run(self.speed[3])
                     self.motor2.run(self.speed[3])
-                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==True:
+
+                if adcs == [False, True, True, True]:
                     #print('TH7')
                     print('0trang,1den,2den,3den')
                     self.motor1.run(self.speed[2])
                     self.motor2.run(self.speed[3])
-                if adcs[0] ==True and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
+
+                if adcs == [True, True, True, False]:
                     #print('TH8')
                     print('0den,1den,2den,3trang')
                     self.motor1.run(self.speed[3])
                     self.motor2.run(self.speed[2])
-                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False :
+
+                if adcs == [False, False, False, False]:
                     print('TH9')
                     self.motor1.stop()
                     self.motor2.stop()
                     return 0
-                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==False  and adcs[3] ==False:
+
+                if adcs == [False, True, False, False]:
                     #print('TH10')
                     print('0trang,1den,2trang,3trang')
                     self.motor1.run(self.speed[2])
                     self.motor2.run(self.speed[1])
-                if adcs[0] ==False and adcs[1] ==False  and adcs[2] ==True and adcs[3] ==False:
+
+                if adcs == [False, False, True, False]:
                     #print('TH11')
                     print('0trang,1trang,2den,3trang')
                     self.motor1.run(self.speed[1])
                     self.motor2.run(self.speed[2])
+
             except ValueError as ve:
                 print('false',ve)
                 self.motor1.stop()
