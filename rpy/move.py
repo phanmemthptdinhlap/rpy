@@ -6,7 +6,7 @@ class MOVE:
     def __init__(self, pin=None,
                  offset=(0,50),
                  speed=(250,500,750,1000,0),
-                 timeconf=0.2,timeconf2=0.065):
+                 timeconf=0.2,timeconf2=0.033):
         if pin is not None:
             self.adcs=ADCS(pin=pin)
         else:
