@@ -31,7 +31,7 @@ class MOVE:
 #### ---- Quay bat line
     def turn(self,r=1):
         ''' robot quay
-            r=1    di chuyển qua phải
+            r=1   di chuyển qua phải
             r=0   di chuyển qua trái
         '''
         values=self.adcs.line()
