@@ -5,7 +5,7 @@ import machine #type: ignore
 import rpy.hmc5883l as hmc5883l
 import time
 
-class RUNER: 
+class RUNNER: 
     def __init__(self, adcpin=None,
                  offset=(0,0),speed=(450,700,900,1000)):
         """ RUNNER là thư viện thay thế cho thư viện dò line 
