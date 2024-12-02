@@ -1,5 +1,5 @@
 import rpy.runner as runner
-import rpy.hmc5883l as hmc5883l
+import rpy.hw.hmc5883l as hmc5883l
 import time
 #run=runner.RUNER(offset=(0,0),speed=(450,700,900,1000))
 hmc=hmc5883l.HMC5883L(scl=22,sda=21)
