@@ -9,25 +9,25 @@ class MOTOR:
         self.pw.duty(0)
         self.offset = offset
 
-    def run(self,tocdo):
-        if tocdo==0:
+    def run(self,speed):
+        if speed==0:
             self.stop()
         else:
-            huong=0 if tocdo>=0 else 1
-            tocdo=abs(tocdo)+self.offset if abs(tocdo)+self.offset<1023 else 1023
-            self.pw.duty(tocdo)
+            huong=0 if speed>=0 else 1
+            speed=abs(speed)+self.offset if abs(speed)+self.offset<1023 else 1023
+            self.pw.duty(speed)
             self.ain.value(huong)
 
-    def __call__(self, tocdo, thoigian=None):
-        if thoigian is not None:self.runtime(tocdo, thoigian)
-        else: self.run(tocdo)
+    def __call__(self, speed, time=None):
+        if time is not None:self.runtime(speed, time)
+        else: self.run(speed)
 
     def stop(self):
         self.pw.duty(0)
 
-    def runtime(self,tocdo, thoigian):
-        self.run(tocdo)
-        time.sleep(thoigian)
+    def runtime(self,speed, time):
+        self.run(speed)
+        time.sleep(time)
         self.stop()
 
 class MOTOR1(MOTOR):
