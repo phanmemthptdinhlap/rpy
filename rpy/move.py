@@ -5,7 +5,9 @@ import time
 
 class MOVE: 
     def __init__(self, pin=None,
-                 offset=(0,50),speed=(250,500,750,1000,0),timeconf=0.2):
+                 offset=(0,50),
+                 speed=(250,500,750,1000,0),
+                 timeconf=0.2):
         if pin is not None:
             self.adcs=ADCS(pin=pin)
         else:
@@ -14,11 +16,12 @@ class MOVE:
             self.timeconf=timeconf
             self.motor1=MOTOR2(offset[0])
             self.motor2=MOTOR1(offset[1])
-##############Quay goc#############
-    def turn(self,r=1 ):
-        '''
-        r=1 rôbot sẽ di chuyển qua phải
-        r= gi do thi robot sẽ di chuyển qua trái
+
+#### ---- Quay goc
+    def turn(self,r=1):
+        ''' robot quay
+            r=1    di chuyển qua phải
+            r=0   di chuyển qua trái
         '''
         values=self.adcs.line()
         while not values[0] and not values[3]:
@@ -28,13 +31,16 @@ class MOVE:
             else:
                 self.motor1.run(400)
                 self.motor2.run(0)
+            # TODO figure out why this line is even needed
             values=self.adcs.line()
         self.motor1.run(200)
         self.motor2.run(200)
         time.sleep(0.2)
         self.motor1.stop()
         self.motor2.stop()
-############Đi thăng một khoảng cm##########    Nhìn từ phía sau, motor1= phải; motor2= trái ###############
+
+#### ---- Di thang mot khoang cm
+#         Nhìn từ phía sau, motor1= phải; motor2= trái
     def run_cm(self,cm):
         ''' Robot di chuyển tiến về trước hoặc lùi về sau một khoảng cm
             Nếu cm dương robot di chuyển về trươc
@@ -50,9 +56,10 @@ class MOVE:
         time.sleep(t)
         self.motor1.stop()
         self.motor2.stop()
-##########Dò line#####################
-    ''' Robot tự động di chuyển theo vạch đen'''
-    def run_line(self):        
+
+#### ---- Do line
+    def run_line(self):
+        ''' Robot tự động di chuyển theo vạch đen'''
         run=True
         while run:
             try:
@@ -120,10 +127,12 @@ class MOVE:
         self.motor1.stop()
         self.motor2.stop()
         return True
-    
-''' def _run_steps(self,step=1):
+
+    '''
+    def _run_steps(self,step=1):
         self.run=True
         for _ in range(step):
             self._run_step()
     def run_steps(self,step=1):
-        self._run_steps(step)'''
+        self._run_steps(step)
+    '''
