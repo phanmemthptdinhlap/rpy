@@ -16,6 +16,7 @@ class MOVE:
             self.timeconf=timeconf
             self.motor1=MOTOR2(offset[0])
             self.motor2=MOTOR1(offset[1])
+
 #### ---- Quay goc
     def turn_degree(self,goc):
         t=self.timeconf*abs(goc)
@@ -26,6 +27,7 @@ class MOVE:
            self.motor1.stop()
            self.motor2.run(-400)   
         time.sleep(t)
+
 #### ---- Quay bat line
     def turn(self,r=1):
         ''' robot quay
