@@ -1,4 +1,4 @@
-from rpy.mpu6050 import MPU6050
+from rpy.hw.mpu6050 import MPU6050
 from rpy import mpu6050 as mpu
 import time
 mpu6050 = MPU6050(addr=0x68, scl=5, sda=4)

@@ -2,7 +2,7 @@ from rpy.adcs import ADCS
 from rpy.motor import MOTOR1,MOTOR2
 
 import machine #type: ignore
-import rpy.hmc5883l as hmc5883l
+import rpy.hw.hmc5883l as hmc5883l
 import time
 
 class RUNNER: 
