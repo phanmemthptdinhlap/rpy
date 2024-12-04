@@ -25,32 +25,52 @@ class ADC(machine.ADC):
 
 class ADC1(ADC):
     __name__='ADC1'
-    def __init__(self,sample=(2750,3050)):
+    def __init__(self,sample=(1100,1200)):
         super().__init__(33,sample)
 
 class ADC2(ADC):
     __name__='ADC2'
-    def __init__(self,sample=(3200,3500)):
+    def __init__(self,sample=(1500,1700)):
         super().__init__(34,sample)
 
 class ADC3(ADC):
     __name__='ADC3'
-    def __init__(self,sample=(3200,3500)):
+    def __init__(self,sample=(1600,1800)):
         super().__init__(35,sample)
 
 class ADC4(ADC):
     __name__='ADC4'
-    def __init__(self,sample=(2850,3150)):
+    def __init__(self,sample=(1300,1600)):
         super().__init__(36,sample)
 
 class RUNNER: 
+    class TURN_CODE:
+        __auto__=0
+        __manual__=1
+    class RUN_CODE:
+        __exit__=0
+        __all_white__=1
+        __all_black__=2
+        __error__=3
+    __msg__=''
     __offset__=(0,0)
-    __speed__=(450,700,900,1000)
+    __speed__=(200,400,600,700)
+    __timeconf__=0.2
+
     def __init__(self):
         """ RUNNER là thư viện thay thế cho thư viện dò line 
             Các tham số cơ bản vẫn giữ nguyên, có thêm tham số về là bàn số
         """
-        self.adcs=(ADC1(),ADC2(),ADC3(),ADC4())
+        self.adc0=machine.ADC(machine.Pin(33))
+        self.adc1=machine.ADC(machine.Pin(34))
+        self.adc2=machine.ADC(machine.Pin(35))
+        self.adc3=machine.ADC(machine.Pin(36))
+        
+        self.adc0.atten(machine.ADC.ATTN_11DB)
+        self.adc1.atten(machine.ADC.ATTN_11DB)
+        self.adc2.atten(machine.ADC.ATTN_11DB)
+        self.adc3.atten(machine.ADC.ATTN_11DB)
+
         self.motor1=MOTOR1(self.__offset__[0])
         self.motor2=MOTOR2(self.__offset__[1])
         try:
@@ -84,40 +104,73 @@ class RUNNER:
                     angle=abs(_angle_move-_angle)
             self.motor1.stop()
             self.motor2.stop()
+            
         except Exception as e:
             print(e.__str__())
+            t=angle*self.__timeconf__
+            if angle>0:
+                self.motor1.run(self.__speed__[0])
+                self.motor2.run(-self.__speed__[0])
+            else:
+                self.motor1.run(-self.__speed__[0])
+                self.motor2.run(self.__speed__[0])
+            time.sleep(t)
+            self.motor1.stop()
+            self.motor2.stop()
+    def readadcs(self):
+        return self.adc0.read(),self.adc1.read(),self.adc2.read(),self.adc3.read()
     def run_step(self):
         while True:
+            adc0 = self.adc0.read()
+            adc1 = self.adc1.read()
+            adc2 = self.adc2.read()
+            adc3 = self.adc3.read()
+            if adc0<100 and adc3<100:
+                self.motor1.stop()
+                self.motor2.stop()
+                return RUNNER.RUN_CODE.__all_black__
+            if adc1<100 and adc2<100:
+
+
+
+
+        """while True:
             try:
-               if self.adcs[0].state()==ADC.STATE.LOW and self.adcs[3].state()==ADC.STATE.LOW:
+                adc0=self.adcs[0].state()
+                adc3=self.adcs[3].state()
+                if adc0==ADC.STATE.LOW and adc3==ADC.STATE.LOW:
                    self.motor1.stop()
                    self.motor2.stop()
-                   return "Đen hết"
-               if self.adcs[1].state()==ADC.STATE.LOW and self.adcs[2].state()==ADC.STATE.LOW:
+                   return RUNNER.RUN_CODE.__all_black__
+                adc1=self.adcs[1].state()
+                adc2=self.adcs[2].state()
+                if adc1==ADC.STATE.LOW and adc2==ADC.STATE.LOW:
                    self.motor1.run(self.__speed__[2])
                    self.motor2.run(self.__speed__[2])
-               else:
-                   if self.adcs[1].state()==ADC.STATE.HIGH:
+                else:
+                    if adc1==ADC.STATE.LOW and adc2==ADC.STATE.HIGH:
                         self.motor1.run(self.__speed__[3])
-                        if self.adcs[3].state()==ADC.STATE.LOW:
+                        if adc0==ADC.STATE.LOW:
                             self.motor2.run(self.__speed__[0])
                         else:
                             self.motor2.run(self.__speed__[1])
-                   if self.adcs[2].state()==ADC.STATE.HIGH:
+                    if adc2==ADC.STATE.LOW and adc1==ADC.STATE.HIGH:
                         self.motor2.run(self.__speed__[3])
-                        if self.adcs[0].state()==ADC.STATE.LOW:
+                        if adc3==ADC.STATE.LOW:
                             self.motor1.run(self.__speed__[0])
                         else:
                             self.motor1.run(self.__speed__[1])
-               if self.adcs[0].state()==ADC.STATE.HIGH and self.adcs[1].state()==ADC.STATE.HIGH and self.adcs[2].state()==ADC.STATE.HIGH and self.adcs[3].state()==ADC.STATE.HIGH:
+                if self.adc0==ADC.STATE.HIGH and adc1==ADC.STATE.HIGH and adc2==ADC.STATE.HIGH and adc3==ADC.STATE.HIGH:
                     self.motor1.stop()
                     self.motor2.stop()
-                    return "Trắng hết"
-               return "Kết thúc"
+                    return RUNNER.RUN_CODE.__all_white__
+                return RUNNER.RUN_CODE.__exit__
             except Exception as e:
+                __msg__=str(e)
                 self.motor1.stop()
                 self.motor2.stop()
-                return "Lỗi:"+str(e)
+                return RUNNER.RUN_CODE.__error__
+        """
     def run_steps(self,step=1):
         self.run=True
         for _ in range(step):
@@ -137,12 +190,11 @@ class TEST:
     class TESTRUNNER:
         def __init__(self):
             self.runner=RUNNER()    
-        def run(self):
-            print("begin run")
-            print('run:',self.runner.run_step())
-
+        def readadcs(self):
+            print(self.runner.readadcs())
 if __name__=='__main__':
     test=TEST.TESTRUNNER()
+    #test=TEST.TESTADC()
     while True:
-        test.run()
-        time.sleep(3)
+        test.readadcs()
+        #test.read()
