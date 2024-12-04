@@ -20,11 +20,12 @@ class MOVE:
 #### ----wait
     ''' ham nay chi co tac dung stop '''
     def wait(self,wait):
-        self.motor1.stop()
-        self.motor2.stop()
-        t=self.hs+wait
-        time.sleep(t)
-#### ---- Quay goc
+        while True:
+            self.motor1.stop()
+            self.motor2.stop()
+            time.sleep(wait)
+            break
+    #### ---- Quay goc
     ''' quay goc khi nhap so do vao
         duong thi quay phai
         am thi quay trai
@@ -218,8 +219,8 @@ class MOVE:
                 if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
                     #print('TH6')
                     print('0trang,1den,2den,3trang')
-                    self.motor1.run(self.speed[3])
-                    self.motor2.run(self.speed[3])
+                    self.motor1.run(self.speed[2])
+                    self.motor2.run(self.speed[2])
                 if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==True:
                     #print('TH7')
                     print('0trang,1den,2den,3den')
@@ -251,79 +252,54 @@ class MOVE:
                 self.motor2.stop()
                 return -1
     def run_theoline(self,cm):
-        adcs=self.adcs.line()
-        t=self.timeconf*abs(cm)
-        if cm>0:
-                if adcs[0] == True and adcs[1] == True and adcs[2] == True and adcs[3] == True:     #True= den, False= trang
-                    self.motor1.run(self.speed[0])
-                    self.motor2.run(self.speed[0])
-                if adcs[0] == True and adcs[1] == True and adcs[2] == False and adcs[3]==False:
-                    self.motor1.run(self.speed[3])
-                    self.motor2.run(self.speed[1])
-                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==True and adcs[3] ==True:
-                    self.motor1.run(self.speed[1])
-                    self.motor2.run(self.speed[3])
-                if adcs[0] ==True and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False: 
-                    self.motor1.run(self.speed[2])
-                    self.motor2.stop()
-                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==True:
-                    self.motor1.stop()
-                    self.motor2.run(self.speed[2])
-                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
-                    self.motor1.run(self.speed[3])
-                    self.motor2.run(self.speed[3])
-                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==True:
-                    self.motor1.run(self.speed[2])
-                    self.motor2.run(self.speed[3])
-                if adcs[0] ==True and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
-                    self.motor1.run(self.speed[3])
-                    self.motor2.run(self.speed[2])
-                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False :
-                    self.motor1.run(self.speed[0])
-                    self.motor2.run(self.speed[0])
-                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==False  and adcs[3] ==False:
-                    self.motor1.run(self.speed[2])
-                    self.motor2.run(self.speed[1])
-                if adcs[0] ==False and adcs[1] ==False  and adcs[2] ==True and adcs[3] ==False:
-                    self.motor1.run(self.speed[1])
-                    self.motor2.run(self.speed[2])
-                time.sleep(t)
-        if cm<0:
-                if adcs[0] == True and adcs[1] == True and adcs[2] == True and adcs[3] == True:#True= den, False= trang
-                    self.motor1.run(-self.speed[0])
-                    self.motor2.run(-self.speed[0])
-                if adcs[0] == True and adcs[1] == True and adcs[2] == False and adcs[3]==False:
-                    self.motor1.run(-self.speed[3])
-                    self.motor2.run(-self.speed[1])
-                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==True and adcs[3] ==True:
-                    self.motor1.run(-self.speed[1])
-                    self.motor2.run(-self.speed[3])
-                if adcs[0] ==True and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False: 
-                    self.motor1.run(-self.speed[2])
-                    self.motor2.stop()
-                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==True:
-                    self.motor1.stop()
-                    self.motor2.run(-self.speed[2])
-                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
-                    self.motor1.run(-self.speed[3])
-                    self.motor2.run(-self.speed[3])
-                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==True:
-                    self.motor1.run(-self.speed[2])
-                    self.motor2.run(-self.speed[3])
-                if adcs[0] ==True and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
-                    self.motor1.run(-self.speed[3])
-                    self.motor2.run(-self.speed[2])
-                if adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False :
-                    self.motor1.run(-self.speed[0])
-                    self.motor2.run(-self.speed[0])
-                if adcs[0] ==False and adcs[1] ==True and adcs[2] ==False  and adcs[3] ==False:
-                    self.motor1.run(-self.speed[2])
-                    self.motor2.run(-self.speed[1])
-                if adcs[0] ==False and adcs[1] ==False  and adcs[2] ==True and adcs[3] ==False:
-                    self.motor1.run(-self.speed[1])
-                    self.motor2.run(-self.speed[2])
-                time.sleep(t)
+        while cm>0 :
+            adcs=self.adcs.line()
+            if adcs[0] == True and adcs[1] == True and adcs[2] == True and adcs[3] == True:     #True= den, False= trang
+                self.motor1.run(self.speed[0])
+                self.motor2.run(self.speed[0])
+                cm=cm-0.001
+            elif adcs[0] == True and adcs[1] == True and adcs[2] == False and adcs[3]==False:
+                self.motor1.run(self.speed[3])
+                self.motor2.run(self.speed[1])
+                cm=cm-0.001
+            elif adcs[0] ==False and adcs[1] ==False and adcs[2] ==True and adcs[3] ==True:
+                self.motor1.run(self.speed[1])
+                self.motor2.run(self.speed[3])
+                cm=cm-0.001
+            elif adcs[0] ==True and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False: 
+                self.motor1.run(self.speed[2])
+                self.motor2.stop()
+                cm=cm-0.001
+            elif adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==True:
+                self.motor1.stop()
+                self.motor2.run(self.speed[2])
+                cm=cm-0.001
+            elif adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
+                self.motor1.run(self.speed[3])
+                self.motor2.run(self.speed[3])
+                cm=cm-0.001
+            elif adcs[0] ==False and adcs[1] ==True and adcs[2] ==True and adcs[3] ==True:
+                self.motor1.run(self.speed[2])
+                self.motor2.run(self.speed[3])
+                cm=cm-0.001
+            elif adcs[0] ==True and adcs[1] ==True and adcs[2] ==True and adcs[3] ==False:
+                self.motor1.run(self.speed[3])
+                self.motor2.run(self.speed[2])
+                cm=cm-0.001
+            elif adcs[0] ==False and adcs[1] ==False and adcs[2] ==False and adcs[3] ==False :
+                self.motor1.run(self.speed[0])
+                self.motor2.run(self.speed[0])
+                cm=cm-0.001
+            elif adcs[0] ==False and adcs[1] ==True and adcs[2] ==False  and adcs[3] ==False:
+                self.motor1.run(self.speed[2])
+                self.motor2.run(self.speed[1])
+                cm=cm-0.001
+            elif adcs[0] ==False and adcs[1] ==False  and adcs[2] ==True and adcs[3] ==False:
+                self.motor1.run(self.speed[1])
+                self.motor2.run(self.speed[2])
+                cm=cm-0.001
+            print(cm)
+        print("vcl")
         self.motor1.stop()
         self.motor2.stop()
-        return True
         
