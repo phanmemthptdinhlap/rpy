@@ -15,7 +15,7 @@ class NhaLac:
         print(value)
         return True if value>2000 else False
 
-    def _laylac(self):
+    def laylac(self):
         try:
             self.ser2.move(30)
             while not self.colac():
