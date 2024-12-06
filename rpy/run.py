@@ -71,21 +71,6 @@ class RUN:
         time.sleep(t)
         print("bp2")
         while True:
-            adc1 = self.adc1.read()
-            adc2 = self.adc2.read()
-            adc3 = self.adc3.read()
-            adc4 = self.adc4.read()
-            if (adc1 > self.__sample_1__ or \
-                adc2 > self.__sample_2__ or \
-                adc3 > self.__sample_3__ or \
-                adc4 > self.__sample_4__):
-                print("bp3")
-                print(adc1,adc2,adc3,adc4)
-                break
-            self.pwa.duty(self.__aspeed_2__)
-            self.pwb.duty(self.__bspeed_2__)
-            print("bp4")
-        while True:
             adc2 = self.adc2.read()
             adc3 = self.adc3.read()
             if (adc2 < self.__sample_2__ or \
