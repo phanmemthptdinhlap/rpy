@@ -55,31 +55,36 @@ class SOWING:
         self.adc=ADC(Pin(self.__pinadc__))
         self.adc.atten(ADC.ATTN_11DB)
         self.ser1.move(90)
-        self.pin_out=Pin(self.__pin_out__)
+        self.pin_out=Pin(self.__pin_out__,Pin.OUT)
+        self.pin_out.on()
+        self.Pin_in=Pin(self.__pin_in__,Pin.IN,Pin.PULL_UP)
 
     def begin(self):
-        irq=Pin(self.__pin_in__,Pin.IN,Pin.PULL_UP)
         while True:
-            if (not irq) and (self._colac()):
-                self._nhalac()
-                self.__count__+=1
-                print(self.__count__)
+            value=self.Pin_in.value()
+            print(value)
+            if value==0 and self._colac():
+                if self._nhalac():
+                    self.__count__+=1
+                    self.pin_out.off()
+                    print(self.__count__)
                 time.sleep(1)
-            if not self._colac():
+                self.pin_out.on()
+            if value==1 and not self._colac():
                 self._laylac()
                 time.sleep(1)
 
     def _colac(self):
         value=self.adc.read()
         print(value)
-        return True if value>2000 else False
+        return True if value>1500 else False
 
     def _laylac(self):
         try:
             self.ser2.move(30)
             while not self._colac():
                 time.sleep(1)
-                self.ser1.move(0)
+                self.ser1.move(366)
             self.ser1.move(80)
             return True
         except:

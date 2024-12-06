@@ -142,6 +142,41 @@ class RUN:
         self.pwa.duty(0)
         self.pwb.duty(0)
         return cm
+    def run_inline(self,cm):
+        """Hàm chạy theo line đen:
+            chạy tiến về trước theo line đen, 
+            dừng lại khi gặp line ngang,
+            Robot tự tiến thêm một chút để mắt đo 1,4 ra khỏi vạch đen
+        """
+        t=self.__timeconf__*abs(cm)
+        st=time.ticks_ms()
+        self.ain.value(0)
+        self.bin.value(0)
+        while time.ticks_diff(time.ticks_ms(),st)<t:
+            adc1 = self.adc1.read()
+            adc2 = self.adc2.read()
+            adc3 = self.adc3.read()
+            adc4 = self.adc4.read()
+            if  adc2<self.__sample_2__ and\
+                adc3<self.__sample_3__:
+                if adc1>self.__sample_1__:
+                    self.pwa.duty(self.__aspeed_1__)
+                    self.pwb.duty(self.__bspeed_4__)
+                elif adc4>self.__sample_4__:
+                    self.pwa.duty(self.__aspeed_4__)
+                    self.pwb.duty(self.__bspeed_1__)
+                else:
+                    self.pwa.duty(0)
+                    self.pwb.duty(0)
+                    break
+            if adc2<self.__sample_2__:
+                self.pwa.duty(self.__aspeed_3__)
+            else:
+                self.pwa.duty(self.__aspeed_2__)
+            if adc3<self.__sample_3__:
+                self.pwb.duty(self.__bspeed_3__)
+            else:
+                self.pwb.duty(self.__bspeed_2__)
     def run_step(self):
         """Hàm chạy theo line đen:
             chạy tiến về trước theo line đen, 
