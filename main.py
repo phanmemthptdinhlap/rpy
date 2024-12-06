@@ -25,15 +25,15 @@ def nha_irq(pin):
 def Layhatgiong():
     m.run_cm(20)
     m.run_find(1)
-    m.run_cm(15)
-    print("quay phải")
+    m.run_cm(12)
     m.turn_find(1)
-    time.sleep(3)
-    print("quay thêm")
-    m.turn(10)
-    time.sleep(3)
     m.run_step()
-    time.sleep(3)
+    m.run_step()
+    m.run_cm(20)
+    m.run_cm(-30)
+    m.turn(-30)
+    m.turn_find(-1)
+    m.run_step()
 
 def main():
     Layhatgiong()
