@@ -20,7 +20,7 @@ class RUN:
     __bspeed_3__=750 #Tốc độ 3 động cơ M2
     __bspeed_4__=850 #Tốc độ 4 động cơ M2
     #Tham số cấu hình cân bằng mắt đo
-    __sample_1__=2360 #Chỉ số cân bằng mắt 1   
+    __sample_1__=2500 #Chỉ số cân bằng mắt 1   
     __sample_2__=2360 #Chỉ số cân bằng mắt 2
     __sample_3__=2250 #Chị số cân bằng mắt 3
     __sample_4__=2500 #Chị số cân bằng mắt 4
@@ -80,7 +80,7 @@ class RUN:
                 adc3 > self.__sample_3__ or \
                 adc4 > self.__sample_4__):
                 print("bp3")
-                print(adc1," ",adc2," ",adc3," ",adc4)
+                print(adc1,adc2,adc3,adc4)
                 break
             self.pwa.duty(self.__aspeed_2__)
             self.pwb.duty(self.__bspeed_2__)
@@ -91,12 +91,14 @@ class RUN:
             if (adc2 < self.__sample_2__ or \
                 adc3 < self.__sample_3__):
                 print("bp5")
+                print(adc2,adc3)
                 break
             self.pwa.duty(self.__aspeed_2__)
             self.pwb.duty(self.__bspeed_2__)
             print("bp6")
         self.pwa.duty(0)
         self.pwb.duty(0)
+        print("bpf")
     def turn(self,r=0):
         """Hàm quay:
             r góc quay mặc định: 0
