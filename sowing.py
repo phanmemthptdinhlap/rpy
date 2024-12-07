@@ -83,16 +83,21 @@ class SOWING:
         try:
             self.ser2.move(30)
             while not self._colac():
+                self.ser1.move(45)
                 time.sleep(1)
                 self.ser1.move(366)
-            self.ser1.move(80)
+                time.sleep(1)
+            self.ser1.move(90)
             return True
         except:
             return False
 
     def _nhalac(self):
         try:
+            self.ser1.move(90)
             while self._colac():
+                self.ser2.move(25)
+                time.sleep(0.5)
                 self.ser2.move(80)
                 time.sleep(1)
             self.ser2.move(30)
