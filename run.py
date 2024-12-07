@@ -20,10 +20,10 @@ class RUN:
     __bspeed_3__=750 #Tốc độ 3 động cơ M2
     __bspeed_4__=850 #Tốc độ 4 động cơ M2
     #Tham số cấu hình cân bằng mắt đo
-    __sample_1__=2760 #Chỉ số cân bằng mắt 1   
-    __sample_2__=2360 #Chỉ số cân bằng mắt 2
-    __sample_3__=2250 #Chị số cân bằng mắt 3
-    __sample_4__=2400 #Chị số cân bằng mắt 4
+    __sample_1__=2790 #Chỉ số cân bằng mắt 1   
+    __sample_2__=2440 #Chỉ số cân bằng mắt 2
+    __sample_3__=2340 #Chị số cân bằng mắt 3
+    __sample_4__=2540 #Chị số cân bằng mắt 4
     def __init__(self):
         """
         Thư viện điều khiển chuyển động của động cơ theo line
@@ -67,14 +67,10 @@ class RUN:
         self.pwa.duty(self.__aspeed_2__)
         self.pwb.duty(self.__bspeed_2__)
         while True:
-            adc1 = self.adc1.read()
             adc2 = self.adc2.read()
             adc3 = self.adc3.read()
-            adc4 = self.adc4.read()
-            if adc1>self.__sample_1__ and\
-                adc2>self.__sample_2__ and\
-                adc3>self.__sample_3__ and\
-                adc4>self.__sample_4__:
+            if adc2>self.__sample_2__ and\
+                adc3>self.__sample_3__:
                 break
         while True:
             adc2 = self.adc2.read()
@@ -99,6 +95,24 @@ class RUN:
             self.bin.value(0)
         self.pwa.duty(self.__aspeed_2__)
         self.pwb.duty(self.__bspeed_2__)
+        time.sleep(t)
+        self.pwa.duty(0)
+        self.pwb.duty(0)
+    def turn2(self,r=0,fb=0):
+        """Hàm quay băng một vánh:
+            r góc quay mặc định: 0
+            r dương quay phải, 
+            r âm quay trái
+        """
+        t=self.__timeangle__*abs(r)
+        if r>0:
+            self.ain.value(fb)
+            self.pwa.duty(self.__aspeed_2__)
+            self.pwb.duty(0)
+        else:
+            self.bin.value(fb)
+            self.pwb.duty(self.__bspeed_2__)
+            self.pwa.duty(0)
         time.sleep(t)
         self.pwa.duty(0)
         self.pwb.duty(0)

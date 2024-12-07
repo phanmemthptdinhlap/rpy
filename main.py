@@ -28,15 +28,24 @@ def Layhatgiong():
     m.run_cm(12)
     m.turn_find(1)
     m.run_step()
+    m.run_cm(5)
     m.run_step()
     m.run_cm(20)
-    m.run_cm(-30)
+    m.run_cm(-25)
     m.turn(-30)
     m.turn_find(-1)
     m.run_step()
+    m.run_cm(10)
+    m.turn(30)
+    m.turn_find(1)
+    m.run_step()
+
 
 def main():
     Layhatgiong()
+    # while True:
+    #     print(m.readadcs())
+    #     time.sleep(1)
 
 
 
