@@ -41,12 +41,12 @@ class SERVO:
         self.__motor.freq(self.__servo_pwm_freq)
 class SOWING:
     #cài đặt chân servo và chân ADC
-    __pins1__=6
-    __pins2__=8
-    __pinadc__=0
+    __pins1__=27
+    __pins2__=23
+    __pinadc__=15
     #Cài đặt chân nhận tin hiệu kích hoạt
-    __pin_in__=12
-    __pin_out__=13
+    #__pin_in__=12
+    __pin_out__=17
     #Lạc đã nhả
     __count__=0
     def __init__(self):
@@ -55,11 +55,13 @@ class SOWING:
         self.adc=ADC(Pin(self.__pinadc__))
         self.adc.atten(ADC.ATTN_11DB)
         self.ser1.move(90)
+        self.ser2.move(30)
         self.pin_out=Pin(self.__pin_out__,Pin.OUT)
         self.pin_out.on()
-        self.Pin_in=Pin(self.__pin_in__,Pin.IN,Pin.PULL_UP)
 
+    """
     def begin(self):
+        self.Pin_in=Pin(self.__pin_in__,Pin.IN,Pin.PULL_UP)
         while True:
             value=self.Pin_in.value()
             print(value)
@@ -73,7 +75,7 @@ class SOWING:
             if value==1 and not self._colac():
                 self._laylac()
                 time.sleep(1)
-
+        """
     def _colac(self):
         value=self.adc.read()
         print(value)
@@ -104,7 +106,13 @@ class SOWING:
             return True
         except:
             return False
-        
+"""       
 if __name__ =="__main__":
     sowing=SOWING()
-    sowing.begin()
+    while True:
+        print(sowing._laylac())
+        time.sleep(1)
+        print(sowing._nhalac())
+        time.sleep(1)
+    #sowing.begin()
+"""

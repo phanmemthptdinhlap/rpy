@@ -8,17 +8,17 @@ class LOG:
         print(msg)
 class RUN:
     #Tham số cấu hình thời gian chạy
-    __timeconf__=0.07 #Thời gian chạy trong 1 cm
+    __timeconf__=0.05 #Thời gian chạy trong 1 cm
     __timeangle__=0.01 #Thời gian quay 1 độ
     #Tham số cấu hình tốc độ động cơ
-    __aspeed_1__=300 #Tốc độ 1 động cơ M1
-    __aspeed_2__=400 #Tốc độ 2 động cơ M1
-    __aspeed_3__=700 #Tốc độ 3 động cơ M1
-    __aspeed_4__=800 #Tốc độ 4 động cơ M1
-    __bspeed_1__=350 #Tốc độ 1 động cơ M2
-    __bspeed_2__=450 #Tốc độ 2 động cơ M2
-    __bspeed_3__=750 #Tốc độ 3 động cơ M2
-    __bspeed_4__=850 #Tốc độ 4 động cơ M2
+    __aspeed_1__=450 #Tốc độ 1 động cơ M1
+    __aspeed_2__=550 #Tốc độ 2 động cơ M1
+    __aspeed_3__=750 #Tốc độ 3 động cơ M1
+    __aspeed_4__=950 #Tốc độ 4 động cơ M1
+    __bspeed_1__=430 #Tốc độ 1 động cơ M2
+    __bspeed_2__=530 #Tốc độ 2 động cơ M2
+    __bspeed_3__=730 #Tốc độ 3 động cơ M2
+    __bspeed_4__=930 #Tốc độ 4 động cơ M2
     #Tham số cấu hình cân bằng mắt đo
     __sample_1__=2790 #Chỉ số cân bằng mắt 1   
     __sample_2__=2440 #Chỉ số cân bằng mắt 2
@@ -104,13 +104,13 @@ class RUN:
             r dương quay phải, 
             r âm quay trái
         """
-        t=self.__timeangle__*abs(r)
-        if r>0:
-            self.ain.value(fb)
+        t=self.__timeangle__*abs(r)*2
+        if fb==0:
+            self.ain.value(0 if r>0 else 1)
             self.pwa.duty(self.__aspeed_2__)
             self.pwb.duty(0)
         else:
-            self.bin.value(fb)
+            self.bin.value(0 if r>0 else 1)
             self.pwb.duty(self.__bspeed_2__)
             self.pwa.duty(0)
         time.sleep(t)
@@ -129,7 +129,7 @@ class RUN:
         while True:
             adc2 = self.adc2.read()
             adc3 = self.adc3.read()
-            if adc2>self.__sample_2__ and\
+            if adc2>self.__sample_2__ or\
                 adc3>self.__sample_3__:
                 self.pwa.duty(0)
                 self.pwb.duty(0)
