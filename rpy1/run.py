@@ -98,14 +98,14 @@ class RUN:
         time.sleep(t)
         self.pwa.duty(0)
         self.pwb.duty(0)
-    def turn2(self,r=0,m=0):
+    def turn2(self,r=0,fb=0):
         """Hàm quay băng một vánh:
             r góc quay mặc định: 0
             r dương quay phải, 
             r âm quay trái
         """
         t=self.__timeangle__*abs(r)*2
-        if m==0:
+        if fb==0:
             self.ain.value(0 if r>0 else 1)
             self.pwa.duty(self.__aspeed_2__)
             self.pwb.duty(0)
@@ -118,7 +118,7 @@ class RUN:
         self.pwb.duty(0)
     def run_find(self,fb):
         """Hàm chạy trong vùng trắng tìm line đen:
-            fb Hướng chuyển động (1: đi về trước, -1: đi về sau)
+            fb Hướng chuyển động (1: đi về trước, 0: đi về sau)
         """
         if fb>0:
             self.ain.value(0)
