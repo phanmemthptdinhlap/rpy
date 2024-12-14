@@ -105,8 +105,7 @@ class SOWING:
             self.ser2.move(30)
             return True
         except:
-            return False
-"""       
+            return False     
 if __name__ =="__main__":
     sowing=SOWING()
     while True:
@@ -115,4 +114,3 @@ if __name__ =="__main__":
         print(sowing._nhalac())
         time.sleep(1)
     #sowing.begin()
-"""
