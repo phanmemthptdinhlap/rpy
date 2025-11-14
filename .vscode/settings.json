@@ -1,6 +1,6 @@
 {
     "terminal.integrated.env.linux": {
-         "PATH": "${env:PATH}:${env:HOME}/.python_env/bin"
+         "PATH": "${env:PATH}:${env:HOME}/MPY/.env/bin"
     },
     "python.testing.pytestArgs": [
         "rpy"
