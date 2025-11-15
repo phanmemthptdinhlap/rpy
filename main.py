@@ -1,124 +1,141 @@
-import network # type: ignore
+# main.py - ESP32-S3 MicroPython - Robot UDP Controller
+import network
 import socket
-import uasyncio as asyncio # type: ignore #tr
-from machine import Pin # type: ignore
+import json
 import time
+from machine import Pin, PWM, Timer
 
-# Cấu hình WiFi AP (Access Point)
-SSID_AP = 'RobotAP'  # Tên mạng WiFi ESP tạo
-PASSWORD_AP = 'password123'  # Password (ít nhất 8 ký tự)
+# === CẤU HÌNH WIFI AP ===
+SSID = "RobotESP32"
+PASSWORD = "12345678"
 
-# Cấu hình GPIO cho robot (motor driver)
-MOTOR_LEFT_FWD = Pin(1, Pin.OUT)
-MOTOR_LEFT_BWD = Pin(2, Pin.OUT)
-MOTOR_RIGHT_FWD = Pin(3, Pin.OUT)
-MOTOR_RIGHT_BWD = Pin(4, Pin.OUT)
+# === CẤU HÌNH UDP ===
+UDP_IP = "192.168.4.1"
+UDP_PORT = 8888
 
-# Hàm điều khiển motor
-def stop():
-    MOTOR_LEFT_FWD.off()
-    MOTOR_LEFT_BWD.off()
-    MOTOR_RIGHT_FWD.off()
-    MOTOR_RIGHT_BWD.off()
+# === CẤU HÌNH CHÂN ===
+# Motor DC (L298N)
+motor_l_fwd = Pin(12, Pin.OUT)
+motor_l_bwd = Pin(13, Pin.OUT)
+motor_r_fwd = Pin(14, Pin.OUT)
+motor_r_bwd = Pin(15, Pin.OUT)
 
-def forward():
-    stop()
-    MOTOR_LEFT_FWD.on()
-    MOTOR_RIGHT_FWD.on()
-    time.sleep(0.5)  # Thời gian chạy
-    stop()
+# Servo (SG90) - PWM 50Hz
+servo_arm = PWM(Pin(16), freq=50)
+servo_bucket_l = PWM(Pin(17), freq=50)
+servo_bucket_r = PWM(Pin(19), freq=50)
+servo_gripper = PWM(Pin(21), freq=50)
 
-def backward():
-    stop()
-    MOTOR_LEFT_BWD.on()
-    MOTOR_RIGHT_BWD.on()
-    time.sleep(0.5)
-    stop()
+# === HÀM ĐIỀU KHIỂN SERVO (0° - 180°) ===
+def servo_write(servo, angle):
+    # Duty cycle: 2.5% (0°) → 12.5% (180°)
+    duty = int((angle * 10 / 180) + 2.5)
+    servo.duty(duty)
 
-def left():
-    stop()
-    MOTOR_LEFT_BWD.on()
-    MOTOR_RIGHT_FWD.on()
-    time.sleep(0.5)
-    stop()
+# Khởi tạo servo ở giữa
+servo_write(servo_arm, 90)
+servo_write(servo_bucket_l, 90)
+servo_write(servo_bucket_r, 90)
+servo_write(servo_gripper, 90)  # Nhả
 
-def right():
-    stop()
-    MOTOR_LEFT_FWD.on()
-    MOTOR_RIGHT_BWD.on()
-    time.sleep(0.5)
-    stop()
+# === BIẾN ĐIỀU KHIỂN ===
+last_cmd = ""
+last_time = 0
+timeout = 500  # ms
 
-# Tạo WiFi AP
-wlan = network.WLAN(network.AP_IF)
-wlan.active(True)
-wlan.config(essid=SSID_AP, password=PASSWORD_AP)
-print('WiFi AP đang chạy...')
-print('SSID:', SSID_AP)
-print('Password:', PASSWORD_AP)
-print('IP mặc định:', wlan.ifconfig()[0])  # Thường là 192.168.4.1
+# === TIMER TỰ DỪNG ===
+timer = Timer(0)
 
-# HTML trang điều khiển
-HTML = """
-<!DOCTYPE html>
-<html>
-<head><title>Điều Khiển Robot</title></head>
-<body>
-<h1>Robot Control via WiFi AP</h1>
-<p>IP: {}:80 | SSID: {} | Pass: {}</p>
-<form action="/"><button style="width:100px;height:50px;">Dừng</button></form>
-<form action="/forward"><button style="width:100px;height:50px;background:green;">Tiến</button></form>
-<form action="/backward"><button style="width:100px;height:50px;background:red;">Lùi</button></form>
-<form action="/left"><button style="width:100px;height:50px;background:yellow;">Trái</button></form>
-<form action="/right"><button style="width:100px;height:50px;background:yellow;">Phải</button></form>
-</body>
-</html>
-"""
+def stop_all(t=None):  # t không dùng, nhưng cần để Timer hoạt động
+    global last_time, last_cmd
+    if time.ticks_ms() - last_time > timeout:
+        motor_l_fwd.off(); motor_l_bwd.off()
+        motor_r_fwd.off(); motor_r_bwd.off()
+        last_cmd = ""
+        print("STOP: Timeout")
 
-# Web server handler
-async def serve_client(reader, writer):
-    request_line = await reader.readline()
-    request = request_line.decode().strip().split(' ')[1]  # Lấy path
-    while await reader.readline() != b"\r\n":
-        pass  # Bỏ qua header
+timer.init(mode=Timer.PERIODIC, period=100, callback=stop_all)
 
-    if request == '/':
-        response = HTML.format(wlan.ifconfig()[0], SSID_AP, PASSWORD_AP)
-        command = 'stop'
-    elif request == '/forward':
-        forward()
-        response = HTML.format(wlan.ifconfig()[0], SSID_AP, PASSWORD_AP)
-        command = 'forward'
-    elif request == '/backward':
-        backward()
-        response = HTML.format(wlan.ifconfig()[0], SSID_AP, PASSWORD_AP)
-        command = 'backward'
-    elif request == '/left':
-        left()
-        response = HTML.format(wlan.ifconfig()[0], SSID_AP, PASSWORD_AP)
-        command = 'left'
-    elif request == '/right':
-        right()
-        response = HTML.format(wlan.ifconfig()[0], SSID_AP, PASSWORD_AP)
-        command = 'right'
-    else:
-        response = HTML.format(wlan.ifconfig()[0], SSID_AP, PASSWORD_AP)
-        command = 'unknown'
+# === HÀM ĐIỀU KHIỂN ROBOT ===
+def control_robot(cmd):
+    global last_time, last_cmd
+    last_time = time.ticks_ms()
+    if cmd == last_cmd:
+        return
+    last_cmd = cmd
 
-    print('Lệnh:', command)
-    writer.write('HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n'.encode())
-    writer.write(response.encode())
-    await writer.drain()
-    await writer.aclose()
+    # Dừng motor trước
+    motor_l_fwd.off(); motor_l_bwd.off()
+    motor_r_fwd.off(); motor_r_bwd.off()
 
-# Hàm main (ĐÃ SỬA: Không dùng serve_forever)
-async def main():
-    stop()  # Dừng robot ban đầu
-    server = await asyncio.start_server(serve_client, '0.0.0.0', 80)
-    print('Web server chạy trên port 80')
-    async with server:
-        while True:  # Vòng lặp giữ server sống (FIX cho MicroPython)
-            await asyncio.sleep(1)  # Sleep để uasyncio xử lý connections
+    print("CMD:", cmd)
 
-# Chạy server
-asyncio.run(main())
+    # === DI CHUYỂN ===
+    if cmd == "robot_up":
+        motor_l_fwd.on(); motor_r_fwd.on()
+    elif cmd == "robot_down":
+        motor_l_bwd.on(); motor_r_bwd.on()
+    elif cmd == "robot_left":
+        motor_l_bwd.on(); motor_r_fwd.on()
+    elif cmd == "robot_right":
+        motor_l_fwd.on(); motor_r_bwd.on()
+
+    # === THÙNG ===
+    elif cmd == "thung_tl_up":
+        servo_write(servo_bucket_l, 135)
+    elif cmd == "thung_tl_down":
+        servo_write(servo_bucket_l, 45)
+    elif cmd == "thung_tr_up":
+        servo_write(servo_bucket_r, 135)
+    elif cmd == "thung_tr_down":
+        servo_write(servo_bucket_r, 45)
+
+    # === CÁNH TAY ===
+    elif cmd == "arm_up":
+        servo_write(servo_arm, 135)
+    elif cmd == "arm_down":
+        servo_write(servo_arm, 45)
+    elif cmd == "arm_left":
+        servo_write(servo_arm, 45)
+    elif cmd == "arm_right":
+        servo_write(servo_arm, 135)
+
+    # === GẮP / NHẢ ===
+    elif cmd == "grip_g":
+        servo_write(servo_gripper, 135)  # Gắp
+    elif cmd == "grip_nha":
+        servo_write(servo_gripper, 45)   # Nhả
+
+# === KHỞI TẠO WIFI AP ===
+ap = network.WLAN(network.AP_IF)
+ap.active(True)
+ap.config(essid=SSID, password=PASSWORD, authmode=network.AUTH_WPA_WPA2_PSK)
+ap.ifconfig(('192.168.4.1', '255.255.255.0', '192.168.4.1', '8.8.8.8'))
+
+print("WiFi AP:", SSID)
+print("IP:", ap.ifconfig()[0])
+
+# === UDP SERVER ===
+addr = socket.getaddrinfo(UDP_IP, UDP_PORT)[0][-1]
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind(addr)
+s.settimeout(0.1)  # Non-blocking
+
+print(f"UDP Server chạy tại {UDP_IP}:{UDP_PORT}")
+
+# === VÒNG LẶP CHÍNH ===
+while True:
+    try:
+        data, client_addr = s.recvfrom(1024)
+        if data:
+            try:
+                msg = json.loads(data.decode('utf-8'))
+                cmd = msg.get("cmd", "")
+                val = msg.get("val", 0)
+                if cmd and val > 0:
+                    control_robot(cmd)
+            except Exception as e:
+                print("JSON error:", e)
+    except OSError:
+        pass  # Timeout
+    time.sleep_ms(10)
