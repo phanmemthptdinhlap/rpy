@@ -98,9 +98,9 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
     Color baseColor = Colors.blue,
   }) {
     final String cmd = '${cmdPrefix}_$direction';
-    final double size = responsiveSize(80, 100, 130);
-    final double iconSize = responsiveSize(36, 44, 56);
-    final double fontSize = responsiveSize(13, 15, 17);
+    final double size = responsiveSize(70, 90, 110);
+    final double iconSize = responsiveSize(25, 35, 45);
+    final double fontSize = responsiveSize(10, 12, 15);
 
     return GestureDetector(
       onTapDown: (_) {
@@ -123,7 +123,7 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
         height: size,
         decoration: BoxDecoration(
           shape: icon != null ? BoxShape.circle : BoxShape.rectangle,
-          borderRadius: icon == null ? BorderRadius.circular(12) : null,
+          borderRadius: icon == null ? BorderRadius.circular(10) : null,
           color: _activeButton == cmd ? Colors.green : baseColor,
         ),
         child: Center(
@@ -186,10 +186,8 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('Di Chuyển', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        SizedBox(height: spacingV),
         _controlButton(label: '', icon: Icons.keyboard_arrow_up, cmdPrefix: 'robot', direction: 'up'),
-        SizedBox(height: spacingV),
+        SizedBox(height: spacingV/2),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -198,7 +196,7 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
             _controlButton(label: '', icon: Icons.keyboard_arrow_right, cmdPrefix: 'robot', direction: 'right'),
           ],
         ),
-        SizedBox(height: spacingV),
+        SizedBox(height: spacingV/2),
         _controlButton(label: '', icon: Icons.keyboard_arrow_down, cmdPrefix: 'robot', direction: 'down'),
       ],
     );
@@ -208,8 +206,6 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('Thùng', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        SizedBox(height: spacingV),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -218,7 +214,7 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
             _controlButton(label: 'Phải', icon: Icons.keyboard_arrow_up, cmdPrefix: 'thung', direction: 'tr_up', baseColor: Colors.orange),
           ],
         ),
-        SizedBox(height: spacingV),
+        SizedBox(height: spacingV/2),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -227,6 +223,7 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
             _controlButton(label: 'Phải', icon: Icons.keyboard_arrow_down, cmdPrefix: 'thung', direction: 'tr_down', baseColor: Colors.orange),
           ],
         ),
+        SizedBox(height: spacingV/2),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -243,10 +240,8 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('Cánh Tay', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        SizedBox(height: spacingV),
         _controlButton(label: '', icon: Icons.keyboard_arrow_up, cmdPrefix: 'arm', direction: 'up'),
-        SizedBox(height: spacingV),
+        SizedBox(height: spacingV/2),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -255,7 +250,7 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
             _controlButton(label: '', icon: Icons.keyboard_arrow_right, cmdPrefix: 'arm', direction: 'right'),
           ],
         ),
-        SizedBox(height: spacingV),
+        SizedBox(height: spacingV/2),
         _controlButton(label: '', icon: Icons.keyboard_arrow_down, cmdPrefix: 'arm', direction: 'down'),
       ],
     );
@@ -263,7 +258,7 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double padding = responsiveSize(12, 16, 20);
+    final double padding = responsiveSize(10, 15, 20);
     final double spacingV = responsiveSize(12, 16, 20);
     final double spacingH = responsiveSize(50, 70, 90);
 
@@ -279,13 +274,13 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
                   // Trạng thái + Settings
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                     decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(8)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
-                          child: Text(_status, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15), overflow: TextOverflow.ellipsis),
+                          child: Text(_status, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12), overflow: TextOverflow.ellipsis),
                         ),
                         IconButton(icon: const Icon(Icons.settings, size: 24), onPressed: _showSettingsDialog, tooltip: 'Cài đặt'),
                       ],
