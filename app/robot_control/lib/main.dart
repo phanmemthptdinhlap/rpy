@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';  // Import package toast
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +42,6 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
   InternetAddress _robotIp = InternetAddress('192.168.4.1');
   int _port = 8888;
   final double _speed = 1.0;
-
   String _activeButton = '';
   Timer? _holdTimer;
 
@@ -82,6 +81,7 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
     super.dispose();
   }
 
+  // === RESPONSIVE ===
   double responsiveSize(double small, double medium, double large) {
     final width = MediaQuery.of(context).size.width;
     if (width < 600) return small;
@@ -89,6 +89,7 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
     return large;
   }
 
+  // === NÚT ĐIỀU KHIỂN CHUNG (TRÒN / CHỮ) ===
   Widget _controlButton({
     required String label,
     required IconData? icon,
@@ -97,9 +98,9 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
     Color baseColor = Colors.blue,
   }) {
     final String cmd = '${cmdPrefix}_$direction';
-    final double width = responsiveSize(80, 100, 130);
-    final double height = responsiveSize(80, 100, 130);
-    final double fontOrIconSize = responsiveSize(32, 40, 50);
+    final double size = responsiveSize(80, 100, 130);
+    final double iconSize = responsiveSize(36, 44, 56);
+    final double fontSize = responsiveSize(13, 15, 17);
 
     return GestureDetector(
       onTapDown: (_) {
@@ -113,13 +114,13 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
         setState(() => _activeButton = '');
         _holdTimer?.cancel();
       },
-      onTapCancel: () {  // SỬA LỖI: Bỏ (_) thành ()
+      onTapCancel: () {
         setState(() => _activeButton = '');
         _holdTimer?.cancel();
       },
       child: Container(
-        width: width,
-        height: height,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
           shape: icon != null ? BoxShape.circle : BoxShape.rectangle,
           borderRadius: icon == null ? BorderRadius.circular(12) : null,
@@ -127,10 +128,10 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
         ),
         child: Center(
           child: icon != null
-              ? Icon(icon, size: fontOrIconSize, color: Colors.white)
+              ? Icon(icon, size: iconSize, color: Colors.white)
               : Text(
                   label,
-                  style: TextStyle(color: Colors.white, fontSize: fontOrIconSize * 0.4, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontSize: fontSize, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
         ),
@@ -138,184 +139,173 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
     );
   }
 
+  // === DIALOG CÀI ĐẶT IP/PORT ===
   void _showSettingsDialog() {
     final ipController = TextEditingController(text: _robotIp.address);
     final portController = TextEditingController(text: _port.toString());
 
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Thay đổi IP và Port'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: ipController,
-                decoration: const InputDecoration(labelText: 'IP Address'),
-              ),
-              TextField(
-                controller: portController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Port'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Hủy'),
-            ),
-            TextButton(
-              onPressed: () {
-                try {
-                  final newIp = InternetAddress(ipController.text);
-                  final newPort = int.parse(portController.text);
-                  setState(() {
-                    _robotIp = newIp;
-                    _port = newPort;
-                    _status = 'Cập nhật: $_robotIp:$_port';
-                  });
-                  _socket?.close();
-                  _initUdp();
-                  Navigator.pop(context);
-                } catch (e) {
-                  Fluttertoast.showToast(msg: 'Lỗi: IP/Port không hợp lệ!');
-                }
-              },
-              child: const Text('Lưu'),
-            ),
+      builder: (context) => AlertDialog(
+        title: const Text('Thay đổi IP và Port'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: ipController, decoration: const InputDecoration(labelText: 'IP Address')),
+            TextField(controller: portController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Port')),
           ],
-        );
-      },
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
+          TextButton(
+            onPressed: () {
+              try {
+                final newIp = InternetAddress(ipController.text);
+                final newPort = int.parse(portController.text);
+                setState(() {
+                  _robotIp = newIp;
+                  _port = newPort;
+                  _status = 'Cập nhật: $_robotIp:$_port';
+                });
+                _socket?.close();
+                _initUdp();
+                Navigator.pop(context);
+              } catch (e) {
+                Fluttertoast.showToast(msg: 'Lỗi: IP/Port không hợp lệ!');
+              }
+            },
+            child: const Text('Lưu'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // === CÁC CỘT CHÍNH ===
+  Widget _buildMovementColumn(double spacingV, double spacingH) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('Di Chuyển', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        SizedBox(height: spacingV),
+        _controlButton(label: '', icon: Icons.keyboard_arrow_up, cmdPrefix: 'robot', direction: 'up'),
+        SizedBox(height: spacingV),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _controlButton(label: '', icon: Icons.keyboard_arrow_left, cmdPrefix: 'robot', direction: 'left'),
+            SizedBox(width: spacingH),
+            _controlButton(label: '', icon: Icons.keyboard_arrow_right, cmdPrefix: 'robot', direction: 'right'),
+          ],
+        ),
+        SizedBox(height: spacingV),
+        _controlButton(label: '', icon: Icons.keyboard_arrow_down, cmdPrefix: 'robot', direction: 'down'),
+      ],
+    );
+  }
+
+  Widget _buildBucketColumn(double spacingV) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('Thùng', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        SizedBox(height: spacingV),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _controlButton(label: 'Trái', icon: Icons.keyboard_arrow_up, cmdPrefix: 'thung', direction: 'tl_up', baseColor: Colors.orange),
+            SizedBox(width: responsiveSize(8, 10, 12)),
+            _controlButton(label: 'Phải', icon: Icons.keyboard_arrow_up, cmdPrefix: 'thung', direction: 'tr_up', baseColor: Colors.orange),
+          ],
+        ),
+        SizedBox(height: spacingV),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _controlButton(label: 'Trái', icon: Icons.keyboard_arrow_down, cmdPrefix: 'thung', direction: 'tl_down', baseColor: Colors.orange),
+            SizedBox(width: responsiveSize(8, 10, 12)),
+            _controlButton(label: 'Phải', icon: Icons.keyboard_arrow_down, cmdPrefix: 'thung', direction: 'tr_down', baseColor: Colors.orange),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _controlButton(label: 'gắp', icon: Icons.auto_graph, cmdPrefix: 'arm', direction: 'gap', baseColor: Colors.deepPurple),
+            SizedBox(width: responsiveSize(60, 100, 150)),
+            _controlButton(label: 'nhả', icon: Icons.auto_mode, cmdPrefix: 'arm', direction: 'nha', baseColor: Colors.deepPurple),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildArmColumn(double spacingV, double spacingH) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text('Cánh Tay', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        SizedBox(height: spacingV),
+        _controlButton(label: '', icon: Icons.keyboard_arrow_up, cmdPrefix: 'arm', direction: 'up'),
+        SizedBox(height: spacingV),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _controlButton(label: '', icon: Icons.keyboard_arrow_left, cmdPrefix: 'arm', direction: 'left'),
+            SizedBox(width: spacingH),
+            _controlButton(label: '', icon: Icons.keyboard_arrow_right, cmdPrefix: 'arm', direction: 'right'),
+          ],
+        ),
+        SizedBox(height: spacingV),
+        _controlButton(label: '', icon: Icons.keyboard_arrow_down, cmdPrefix: 'arm', direction: 'down'),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final double padding = responsiveSize(16, 24, 32);
-    final double spacingV = responsiveSize(15, 20, 30);
-    final double spacingH = responsiveSize(60, 80, 100);
+    final double padding = responsiveSize(12, 16, 20);
+    final double spacingV = responsiveSize(12, 16, 20);
+    final double spacingH = responsiveSize(50, 70, 90);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Điều khiển Robot'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: _showSettingsDialog,
-          ),
-        ],
-      ),
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(padding),
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(8)),
-                child: Text(
-                  _status,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  textAlign: TextAlign.center,
-                ),
+        child: Stack(
+          children: [
+            // === LAYOUT CHÍNH ===
+            Padding(
+              padding: EdgeInsets.all(padding),
+              child: Column(
+                children: [
+                  // Trạng thái + Settings
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(8)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(_status, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15), overflow: TextOverflow.ellipsis),
+                        ),
+                        IconButton(icon: const Icon(Icons.settings, size: 24), onPressed: _showSettingsDialog, tooltip: 'Cài đặt'),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: responsiveSize(12, 16, 20)),
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(child: _buildMovementColumn(spacingV, spacingH)),
+                        Expanded(child: _buildBucketColumn(spacingV)),
+                        Expanded(child: _buildArmColumn(spacingV, spacingH)),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              SizedBox(height: responsiveSize(20, 30, 40)),
-
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // === BÊN TRÁI: DI CHUYỂN ROBOT ===
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Di Chuyển Robot', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          SizedBox(height: spacingV),
-                          _controlButton(label: '', icon: Icons.keyboard_arrow_up, cmdPrefix: 'robot', direction: 'up'),
-                          SizedBox(height: spacingV),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _controlButton(label: '', icon: Icons.keyboard_arrow_left, cmdPrefix: 'robot', direction: 'left'),
-                              SizedBox(width: spacingH),
-                              _controlButton(label: '', icon: Icons.keyboard_arrow_right, cmdPrefix: 'robot', direction: 'right'),
-                            ],
-                          ),
-                          SizedBox(height: spacingV),
-                          _controlButton(label: '', icon: Icons.keyboard_arrow_down, cmdPrefix: 'robot', direction: 'down'),
-                        ],
-                      ),
-                    ),
-
-                    // === GIỮA: ĐIỀU KHIỂN THÙNG ===
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Điều Khiển Thùng', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          SizedBox(height: spacingV),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _controlButton(label: 'Nâng\nTrái', icon: null, cmdPrefix: 'thung', direction: 'tl_up', baseColor: Colors.orange),
-                              SizedBox(width: responsiveSize(10, 12, 16)),
-                              _controlButton(label: 'Nâng\nPhải', icon: null, cmdPrefix: 'thung', direction: 'tr_up', baseColor: Colors.orange),
-                            ],
-                          ),
-                          SizedBox(height: spacingV),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _controlButton(label: 'Hạ\nTrái', icon: null, cmdPrefix: 'thung', direction: 'tl_down', baseColor: Colors.orange),
-                              SizedBox(width: responsiveSize(10, 12, 16)),
-                              _controlButton(label: 'Hạ\nPhải', icon: null, cmdPrefix: 'thung', direction: 'tr_down', baseColor: Colors.orange),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // === BÊN PHẢI: CÁNH TAY ROBOT ===
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Cánh Tay Robot', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          SizedBox(height: spacingV),
-                          _controlButton(label: '', icon: Icons.keyboard_arrow_up, cmdPrefix: 'arm', direction: 'up'),
-                          SizedBox(height: spacingV),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _controlButton(label: '', icon: Icons.keyboard_arrow_left, cmdPrefix: 'arm', direction: 'left'),
-                              SizedBox(width: responsiveSize(12, 15, 20)),
-                              Column(
-                                children: [
-                                  _controlButton(label: 'Gắp', icon: null, cmdPrefix: 'grip', direction: 'g', baseColor: Colors.purple),
-                                  SizedBox(height: responsiveSize(12, 15, 20)),
-                                  _controlButton(label: 'Nhả', icon: null, cmdPrefix: 'grip', direction: 'nha', baseColor: Colors.purple),
-                                ],
-                              ),
-                              SizedBox(width: responsiveSize(12, 15, 20)),
-                              _controlButton(label: '', icon: Icons.keyboard_arrow_right, cmdPrefix: 'arm', direction: 'right'),
-                            ],
-                          ),
-                          SizedBox(height: spacingV),
-                          _controlButton(label: '', icon: Icons.keyboard_arrow_down, cmdPrefix: 'arm', direction: 'down'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
