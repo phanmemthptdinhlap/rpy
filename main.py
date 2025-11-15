@@ -1,7 +1,7 @@
-import network
+import network # type: ignore
 import socket
-import uasyncio as asyncio
-from machine import Pin
+import uasyncio as asyncio # type: ignore #tr
+from machine import Pin # type: ignore
 import time
 
 # Cấu hình WiFi AP (Access Point)
