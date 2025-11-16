@@ -104,14 +104,12 @@ class _RobotControlScreenState extends State<RobotControlScreen> {
     if (_socket == null) return;
     
     // Gửi toàn bộ _activeCommands Map dưới dạng JSON.
-    final dataToSend = _activeCommands; 
-    
-    final bytes = utf8.encode(jsonEncode(dataToSend));
+    final List<int> vals = _activeCommands.map((key, value) => MapEntry(key, value)).values.toList();
+    final bytes = utf8.encode(jsonEncode(vals));
     try {
       _socket!.send(bytes, _robotIp, _port);
-      _logError('Đang gửi: $dataToSend');
+      _logError('Đang gửi: $vals');
       setState(() {
-        final List<int> vals = _activeCommands.map((key, value) => MapEntry(key, value)).values.toList();
         _laststatus = ' ${jsonEncode(vals)}';
       });
     } catch (_) {
